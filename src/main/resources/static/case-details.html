@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Case Details</title>
+
+    <style>
+
+        body{
+            font-family:Segoe UI, Arial, sans-serif;
+            background:#f4f7fc;
+            margin:0;
+        }
+
+        .navbar{
+            background:#1565c0;
+            color:white;
+            padding:20px 40px;
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+        }
+
+        .btn{
+            background:white;
+            color:#1565c0;
+            border:none;
+            padding:10px 20px;
+            border-radius:8px;
+            cursor:pointer;
+            font-weight:bold;
+        }
+
+        .container{
+            max-width:1000px;
+            margin:40px auto;
+            background:white;
+            padding:30px;
+            border-radius:12px;
+            box-shadow:0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .field{
+            margin-bottom:20px;
+        }
+
+        .label{
+            font-weight:bold;
+            color:#1565c0;
+            margin-bottom:5px;
+        }
+
+        .value{
+            margin-top:5px;
+        }
+
+        .section-box{
+            margin-top:20px;
+            margin-bottom:30px;
+            padding:20px;
+            background:#f8f9fc;
+            border-radius:10px;
+        }
+
+        select,
+        textarea{
+            padding:10px;
+            border:1px solid #ccc;
+            border-radius:8px;
+            width:100%;
+            max-width:500px;
+        }
+
+        textarea{
+            min-height:100px;
+            resize:vertical;
+        }
+
+        .update-btn{
+            background:#1565c0;
+            color:white;
+            border:none;
+            padding:10px 20px;
+            border-radius:8px;
+            cursor:pointer;
+            margin-top:10px;
+        }
+
+        .update-btn:hover{
+            background:#0d47a1;
+        }
+
+        .note-card{
+            background:white;
+            border-left:4px solid #1565c0;
+            padding:15px;
+            margin-top:12px;
+            border-radius:8px;
+            box-shadow:0 2px 6px rgba(0,0,0,0.08);
+        }
+
+        .note-date{
+            font-size:12px;
+            color:#666;
+            margin-bottom:8px;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="navbar">
+
+    <h2>Case Details</h2>
+
+    <button class="btn"
+            onclick="window.location.href='history.html'">
+        Back
+    </button>
+
+</div>
+
+<div class="container">
+
+    <div class="field">
+        <div class="label">Case ID</div>
+        <div id="id" class="value"></div>
+    </div>
+
+    <div class="field">
+        <div class="label">Category</div>
+        <div id="category" class="value"></div>
+    </div>
+
+    <div class="field">
+        <div class="label">Priority</div>
+        <div id="priority" class="value"></div>
+    </div>
+
+    <div class="field">
+        <div class="label">Sentiment</div>
+        <div id="sentiment" class="value"></div>
+    </div>
+
+    <div class="field">
+        <div class="label">Current Status</div>
+        <div id="status" class="value"></div>
+    </div>
+
+    <div class="field">
+        <div class="label">Assigned To</div>
+        <div id="assignedTo" class="value"></div>
+    </div>
+
+    <div class="section-box">
+
+        <div class="label">Update Status</div>
+
+        <select id="statusDropdown">
+            <option value="Open">Open</option>
+            <option value="In Progress">In Progress</option>
+            <option value="Resolved">Resolved</option>
+            <option value="Closed">Closed</option>
+        </select>
+
+        <br>
+
+        <button class="update-btn"
+                onclick="updateStatus()">
+            Update Status
+        </button>
+
+    </div>
+
+    <div class="section-box">
+
+        <div class="label">Assign Agent</div>
+
+        <select id="agentDropdown">
+            <option value="Unassigned">Unassigned</option>
+            <option value="Sathwika">Sathwika</option>
+            <option value="Arjun">Arjun</option>
+            <option value="Support Team">Support Team</option>
+        </select>
+
+        <br>
+
+        <button class="update-btn"
+                onclick="assignAgent()">
+            Assign Agent
+        </button>
+
+    </div>
+
+    <div class="section-box">
+
+        <div class="label">Add Note</div>
+
+        <textarea
+                id="noteText"
+                placeholder="Enter note..."></textarea>
+
+        <br>
+
+        <button class="update-btn"
+                onclick="addNote()">
+            Add Note
+        </button>
+
+    </div>
+
+    <div class="section-box">
+
+        <div class="label">Case Notes</div>
+
+        <div id="notesContainer"></div>
+
+    </div>
+
+    <div class="field">
+        <div class="label">Customer Description</div>
+        <div id="description" class="value"></div>
+    </div>
+
+    <div class="field">
+        <div class="label">AI Summary</div>
+        <div id="summary" class="value"></div>
+    </div>
+
+    <div class="field">
+        <div class="label">Created At</div>
+        <div id="createdAt" class="value"></div>
+    </div>
+
+</div>
+
+<script>
+
+const params =
+    new URLSearchParams(window.location.search);
+
+const caseId =
+    params.get("id");
+
+async function loadCase() {
+
+    const response =
+        await fetch("/cases/" + caseId);
+
+    const data =
+        await response.json();
+
+    document.getElementById("id").innerText =
+        data.id;
+
+    document.getElementById("category").innerText =
+        data.category;
+
+    document.getElementById("priority").innerText =
+        data.priority;
+
+    document.getElementById("sentiment").innerText =
+        data.sentiment;
+
+    document.getElementById("status").innerText =
+        data.status;
+
+    document.getElementById("assignedTo").innerText =
+        data.assignedTo;
+
+    document.getElementById("statusDropdown").value =
+        data.status;
+
+    document.getElementById("agentDropdown").value =
+        data.assignedTo;
+
+    document.getElementById("description").innerText =
+        data.customerDescription;
+
+    document.getElementById("summary").innerText =
+        data.summary;
+
+    document.getElementById("createdAt").innerText =
+        data.createdAt;
+}
+
+async function updateStatus() {
+
+    const status =
+        document.getElementById("statusDropdown").value;
+
+    await fetch(
+        "/cases/" + caseId + "/status?status=" +
+        encodeURIComponent(status),
+        {
+            method:"PUT"
+        }
+    );
+
+    alert("Status updated successfully");
+
+    loadCase();
+}
+
+async function assignAgent() {
+
+    const assignedTo =
+        document.getElementById("agentDropdown").value;
+
+    await fetch(
+        "/cases/" + caseId + "/assign?assignedTo=" +
+        encodeURIComponent(assignedTo),
+        {
+            method:"PUT"
+        }
+    );
+
+    alert("Agent assigned successfully");
+
+    loadCase();
+}
+
+async function addNote() {
+
+    const note =
+        document.getElementById("noteText").value;
+
+    if(note.trim() === ""){
+        alert("Enter a note");
+        return;
+    }
+
+    await fetch(
+        "/cases/" + caseId + "/notes",
+        {
+            method:"POST",
+            headers:{
+                "Content-Type":"application/json"
+            },
+            body:JSON.stringify({
+                note:note
+            })
+        }
+    );
+
+    document.getElementById("noteText").value = "";
+
+    loadNotes();
+
+    alert("Note added successfully");
+}
+
+async function loadNotes() {
+
+    const response =
+        await fetch("/cases/" + caseId + "/notes");
+
+    const notes =
+        await response.json();
+
+    const container =
+        document.getElementById("notesContainer");
+
+    container.innerHTML = "";
+
+    if(notes.length === 0){
+
+        container.innerHTML =
+            "<p>No notes available.</p>";
+
+        return;
+    }
+
+    notes.forEach(n => {
+
+        container.innerHTML += `
+            <div class="note-card">
+                <div class="note-date">
+                    ${n.createdAt}
+                </div>
+                <div>
+                    ${n.note}
+                </div>
+            </div>
+        `;
+    });
+}
+
+loadCase();
+loadNotes();
+
+</script>
+
+</body>
+</html>

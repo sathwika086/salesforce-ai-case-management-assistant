@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Case History</title>
+
+    <style>
+
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+        }
+
+        body{
+            font-family:Segoe UI, Arial, sans-serif;
+            background:#f4f7fc;
+        }
+
+        .navbar{
+            background:#1565c0;
+            color:white;
+            padding:20px 40px;
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            box-shadow:0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        .nav-title{
+            font-size:28px;
+            font-weight:bold;
+        }
+
+        .dashboard-btn{
+            background:white;
+            color:#1565c0;
+            border:none;
+            padding:10px 20px;
+            border-radius:8px;
+            font-size:15px;
+            font-weight:bold;
+            cursor:pointer;
+        }
+
+        .dashboard-btn:hover{
+            background:#f0f0f0;
+        }
+
+        .container{
+            max-width:1200px;
+            margin:40px auto;
+            background:white;
+            padding:30px;
+            border-radius:12px;
+            box-shadow:0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        h2{
+            margin-bottom:10px;
+        }
+
+        .subtitle{
+            color:#666;
+            margin-bottom:25px;
+        }
+
+        .filters{
+            display:flex;
+            gap:15px;
+            flex-wrap:wrap;
+            margin-bottom:25px;
+            align-items:center;
+        }
+
+        select{
+            padding:10px;
+            border:1px solid #ccc;
+            border-radius:8px;
+            min-width:180px;
+        }
+
+        .filter-btn{
+            background:#1565c0;
+            color:white;
+            border:none;
+            padding:10px 20px;
+            border-radius:8px;
+            cursor:pointer;
+        }
+
+        .filter-btn:hover{
+            background:#0d47a1;
+        }
+
+        .clear-btn{
+            background:#757575;
+            color:white;
+            border:none;
+            padding:10px 20px;
+            border-radius:8px;
+            cursor:pointer;
+        }
+
+        .clear-btn:hover{
+            background:#616161;
+        }
+
+        table{
+            width:100%;
+            border-collapse:collapse;
+        }
+
+        th{
+            background:#1565c0;
+            color:white;
+            padding:14px;
+            text-align:left;
+        }
+
+        td{
+            padding:14px;
+            border-bottom:1px solid #e0e0e0;
+        }
+
+        tr:nth-child(even){
+            background:#f9fbff;
+        }
+
+        tbody tr:hover{
+            background:#eef5ff;
+            cursor:pointer;
+        }
+
+        .badge{
+            padding:6px 12px;
+            border-radius:20px;
+            font-size:12px;
+            font-weight:bold;
+            color:white;
+        }
+
+        .high{
+            background:#e53935;
+        }
+
+        .medium{
+            background:#fb8c00;
+        }
+
+        .low{
+            background:#43a047;
+        }
+
+        .open{
+            background:#1976d2;
+        }
+
+        .in-progress{
+            background:#fb8c00;
+        }
+
+        .resolved{
+            background:#43a047;
+        }
+
+        .closed{
+            background:#616161;
+        }
+
+        .empty-message{
+            text-align:center;
+            padding:20px;
+            color:#666;
+        }
+
+        .footer{
+            text-align:center;
+            margin-top:30px;
+            color:#777;
+        }
+
+    </style>
+</head>
+
+<body>
+
+<div class="navbar">
+
+    <div class="nav-title">
+        Case History
+    </div>
+
+    <button class="dashboard-btn"
+            onclick="window.location.href='index.html'">
+        Dashboard
+    </button>
+    
+
+</div>
+
+<div class="container">
+
+    <h2>Customer Cases</h2>
+
+    <p class="subtitle">
+        Search and filter customer support cases.
+    </p>
+
+    <div class="filters">
+        <input
+    type="text"
+    id="searchBox"
+    placeholder="Search by category or description..."
+    style="
+        padding:10px;
+        border:1px solid #ccc;
+        border-radius:8px;
+        min-width:300px;
+    ">
+
+<button class="filter-btn"
+        onclick="searchCases()">
+    Search
+</button>
+
+        <select id="categoryFilter">
+            <option value="">All Categories</option>
+            <option value="Billing">Billing</option>
+            <option value="Technical">Technical</option>
+            <option value="Account">Account</option>
+        </select>
+
+        <select id="priorityFilter">
+            <option value="">All Priorities</option>
+            <option value="High">High</option>
+            <option value="Medium">Medium</option>
+            <option value="Low">Low</option>
+        </select>
+
+        <select id="sentimentFilter">
+            <option value="">All Sentiments</option>
+            <option value="Positive">Positive</option>
+            <option value="Neutral">Neutral</option>
+            <option value="Negative">Negative</option>
+        </select>
+
+        <button class="filter-btn"
+                onclick="applyFilters()">
+            Apply Filters
+        </button>
+
+        <button class="clear-btn"
+                onclick="loadCases()">
+            Clear
+        </button>
+
+        <button class="filter-btn"
+                onclick="window.location.href='/export-csv'">
+            Export
+        </button>
+
+    </div>
+
+    <table>
+
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Category</th>
+            <th>Priority</th>
+            <th>Status</th>
+            <th>Assigned To</th>
+            <th>Sentiment</th>
+            <th>Created At</th>
+        </tr>
+        </thead>
+
+        <tbody id="casesBody">
+
+        </tbody>
+
+    </table>
+
+    <div class="footer">
+        AI CRM Case Management Assistant
+    </div>
+
+</div>
+
+<script>
+
+let allCases = [];
+
+async function loadCases(){
+
+    try{
+
+        const response =
+            await fetch("/cases");
+
+        allCases =
+            await response.json();
+
+        renderCases(allCases);
+
+    }catch(error){
+
+        alert("Failed to load case history");
+    }
+}
+
+function renderCases(cases){
+
+    const body =
+        document.getElementById("casesBody");
+
+    body.innerHTML = "";
+
+    if(cases.length === 0){
+
+        body.innerHTML = `
+            <tr>
+                <td colspan="7" class="empty-message">
+                    No matching cases found.
+                </td>
+            </tr>
+        `;
+
+        return;
+    }
+
+    cases.forEach(c => {
+
+        body.innerHTML += `
+            <tr onclick="window.location.href='case-details.html?id=${c.id}'">
+
+                <td>${c.id}</td>
+
+                <td>${c.category}</td>
+
+                <td>
+                    ${
+                        c.priority === "High"
+                        ? '<span class="badge high">HIGH</span>'
+                        : c.priority === "Medium"
+                        ? '<span class="badge medium">MEDIUM</span>'
+                        : '<span class="badge low">LOW</span>'
+                    }
+                </td>
+
+                <td>
+                    ${
+                        c.status === "Open"
+                        ? '<span class="badge open">OPEN</span>'
+                        : c.status === "In Progress"
+                        ? '<span class="badge in-progress">IN PROGRESS</span>'
+                        : c.status === "Resolved"
+                        ? '<span class="badge resolved">RESOLVED</span>'
+                        : '<span class="badge closed">CLOSED</span>'
+                    }
+                </td>
+
+                <td>${c.assignedTo || 'Unassigned'}</td>
+
+                <td>${c.sentiment}</td>
+
+                <td>${c.createdAt}</td>
+
+            </tr>
+        `;
+    });
+}
+async function searchCases() {
+
+    const keyword =
+        document.getElementById("searchBox").value;
+
+    const response =
+        await fetch(
+            "/cases/search?keyword=" +
+            encodeURIComponent(keyword)
+        );
+
+    const data =
+        await response.json();
+
+    renderCases(data);
+}
+
+function applyFilters(){
+
+    const category =
+        document.getElementById("categoryFilter").value;
+
+    const priority =
+        document.getElementById("priorityFilter").value;
+
+    const sentiment =
+        document.getElementById("sentimentFilter").value;
+
+    const filtered =
+        allCases.filter(c => {
+
+            return (
+                (category === "" || c.category === category) &&
+                (priority === "" || c.priority === priority) &&
+                (sentiment === "" || c.sentiment === sentiment)
+            );
+        });
+
+    renderCases(filtered);
+}
+
+loadCases();
+
+</script>
+
+</body>
+</html>
