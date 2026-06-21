@@ -100,6 +100,7 @@ Display:
 ---
 4. Project Architecture
 
+```text
 Customer
     |
     v
@@ -124,3 +125,87 @@ Case Synchronization
     |
     v
 Email Notification Service
+```
+Case Synchronization
+    |
+    v
+Email Notification Service
+5. Work Flow
+
+Step 1
+Customer submits a support issue.
+
+Step 2
+Gemini AI analyzes the issue and generates:
+Category
+Priority
+Sentiment
+Summary
+Suggested Resolution
+
+Step 3
+Case data is stored in PostgreSQL.
+
+Step 4
+A Salesforce Case is automatically created.
+
+Step 5
+Support team manages:
+Assignments
+Notes
+Status updates
+
+Step 6
+When a case is marked as Resolved:
+Customer receives an automated email notification.
+
+6. Setup Instructions
+Clone Repository
+git clone https://github.com/sathwika086/salesforce-ai-case-management-assistant.git
+
+-> Configure Application Properties
+Create:
+src/main/resources/application.properties
+Example:
+spring.datasource.url=jdbc:postgresql://localhost:5432/aicrm
+spring.datasource.username=postgres
+spring.datasource.password=YOUR_PASSWORD
+
+gemini.api.key=YOUR_GEMINI_API_KEY
+
+salesforce.client.id=YOUR_CLIENT_ID
+salesforce.client.secret=YOUR_CLIENT_SECRET
+
+spring.mail.username=YOUR_EMAIL
+spring.mail.password=YOUR_APP_PASSWORD
+-> Run Application
+mvn spring-boot:run
+Application will be available at:
+http://localhost:8080
+
+7. Key Achievements
+AI-powered customer case classification
+Automated sentiment analysis
+Salesforce CRM integration
+Email automation workflow
+Case assignment and lifecycle management
+Analytics and reporting dashboard
+Enterprise-style customer support workflow
+
+Author
+Developed by Sathwika Thangallapally
+
+Technologies Used
+Spring Boot | PostgreSQL | Gemini AI | Salesforce CRM | Gmail SMTP | HTML | CSS | JavaScript
+⭐ If you found this project useful, consider starring the repository.
+
+##Screenshots
+
+<img width="1361" height="637" alt="Screenshot 2026-06-21 151947" src="https://github.com/user-attachments/assets/6cf45cb3-f182-4e2c-9935-7ef30d479ba5" />
+<img width="1363" height="736" alt="Screenshot 2026-06-21 151711" src="https://github.com/user-attachments/assets/6a7badd4-9921-4732-8f72-3225c5ea30d0" />
+<img width="1359" height="680" alt="image" src="https://github.com/user-attachments/assets/bb2ce0a1-156f-4c9b-9be4-d66d0128942c" />
+<img width="1344" height="663" alt="image" src="https://github.com/user-attachments/assets/6d95d40e-37fe-4550-ab04-b5887109cd72" />
+
+
+
+
