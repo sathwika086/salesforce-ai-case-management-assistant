@@ -9,34 +9,41 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.time.LocalDateTime;
+import com.sathwika.aicrm.service.SalesforceService;
 
 @Service
 public class GeminiService {
 
     @Value("${gemini.api.key}")
     private String apiKey;
-
     private final CaseAnalysisRepository caseAnalysisRepository;
+private final SalesforceService salesforceService;
 
-    public GeminiService(CaseAnalysisRepository caseAnalysisRepository) {
-        this.caseAnalysisRepository = caseAnalysisRepository;
-    }
+public GeminiService(
+        CaseAnalysisRepository caseAnalysisRepository,
+        SalesforceService salesforceService) {
 
-    public String analyzeCase(String description) {
+    this.caseAnalysisRepository = caseAnalysisRepository;
+    this.salesforceService = salesforceService;
+}
+
+    public String analyzeCase(
+        String description,
+        String customerEmail){
 
         WebClient webClient = WebClient.builder()
                 .baseUrl("https://generativelanguage.googleapis.com")
                 .build();
 
         String requestBody = """
-{
-  "contents": [{
-    "parts": [{
-      "text": "Analyze the customer support case below and return ONLY valid JSON. Do not add explanations, markdown, or code blocks. Use this format: {\\\"category\\\":\\\"Billing\\\",\\\"priority\\\":\\\"High\\\",\\\"sentiment\\\":\\\"Negative\\\",\\\"summary\\\":\\\"Short summary here\\\",\\\"suggestedResolution\\\":\\\"Recommended action here\\\"}. Customer Case: %s"
-    }]
-  }]
-}
-""".formatted(description);
+        {
+          "contents": [{
+            "parts": [{
+              "text": "Analyze the customer support case below and return ONLY valid JSON. Do not add explanations, markdown, or code blocks. Use this format: {\\\"category\\\":\\\"Billing\\\",\\\"priority\\\":\\\"High\\\",\\\"sentiment\\\":\\\"Negative\\\",\\\"summary\\\":\\\"Short summary here\\\",\\\"suggestedResolution\\\":\\\"Recommended action here\\\"}. Customer Case: %s"
+            }]
+          }]
+        }
+        """.formatted(description);
 
         try {
 
@@ -85,23 +92,28 @@ public class GeminiService {
 
             caseAnalysis.setSummary(
                     analysis.path("summary").asText());
-            caseAnalysis.setSuggestedResolution(
-        analysis.path("suggestedResolution").asText());
+
             caseAnalysis.setSuggestedResolution(
                     analysis.path("suggestedResolution").asText());
 
             caseAnalysis.setCustomerDescription(
-        description);
+                    description);
+            caseAnalysis.setCustomerEmail(
+        customerEmail);
 
-caseAnalysis.setStatus(
-        "Open");
-caseAnalysis.setAssignedTo(
-        "Unassigned");
+            caseAnalysis.setStatus(
+                    "Open");
 
-caseAnalysis.setCreatedAt(
-        LocalDateTime.now());
+            caseAnalysis.setAssignedTo(
+                    "Unassigned");
 
-            caseAnalysisRepository.save(caseAnalysis);
+            caseAnalysis.setCreatedAt(
+                    LocalDateTime.now());
+
+            CaseAnalysis savedCase =
+        caseAnalysisRepository.save(caseAnalysis);
+
+salesforceService.createCaseFromDb(savedCase.getId());
 
             String formattedOutput = """
                     AI Case Analysis
@@ -112,11 +124,15 @@ caseAnalysis.setCreatedAt(
 
                     Summary:
                     %s
+
+                    Suggested Resolution:
+                    %s
                     """.formatted(
                     analysis.path("category").asText(),
                     analysis.path("priority").asText(),
                     analysis.path("sentiment").asText(),
-                    analysis.path("summary").asText()
+                    analysis.path("summary").asText(),
+                    analysis.path("suggestedResolution").asText()
             );
 
             return formattedOutput;

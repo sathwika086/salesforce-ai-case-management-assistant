@@ -1,379 +1,442 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Case Details</title>
 
     <style>
-
-        body{
-            font-family:Segoe UI, Arial, sans-serif;
-            background:#f4f7fc;
-            margin:0;
+        :root {
+            --sf-blue: #0176D3;
+            --sf-blue-hover: #014486;
+            --sf-bg: #F3F2F2;
+            --sf-text-main: #181818;
+            --sf-text-muted: #444444;
+            --sf-border: #C9C9C9;
+            --sf-card-bg: #FFFFFF;
         }
 
-        .navbar{
-            background:#1565c0;
-            color:white;
-            padding:20px 40px;
-            display:flex;
-            justify-content:space-between;
-            align-items:center;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
-        .btn{
-            background:white;
-            color:#1565c0;
-            border:none;
-            padding:10px 20px;
-            border-radius:8px;
-            cursor:pointer;
-            font-weight:bold;
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--sf-bg);
+            color: var(--sf-text-main);
+            line-height: 1.5;
         }
 
-        .container{
-            max-width:1000px;
-            margin:40px auto;
-            background:white;
-            padding:30px;
-            border-radius:12px;
-            box-shadow:0 4px 15px rgba(0,0,0,0.1);
+        /* Navbar Styling */
+        .navbar {
+            background: var(--sf-blue);
+            color: white;
+            padding: 16px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
 
-        .field{
-            margin-bottom:20px;
+        .navbar h2 {
+            font-size: 22px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            margin: 0;
         }
 
-        .label{
-            font-weight:bold;
-            color:#1565c0;
-            margin-bottom:5px;
+        .btn {
+            background: white;
+            color: var(--sf-blue);
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s, box-shadow 0.2s;
         }
 
-        .value{
-            margin-top:5px;
+        .btn:hover {
+            background: #f4f6f9;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
 
-        .section-box{
-            margin-top:20px;
-            margin-bottom:30px;
-            padding:20px;
-            background:#f8f9fc;
-            border-radius:10px;
+        /* Container & Cards */
+        .container {
+            max-width: 1000px;
+            margin: 30px auto;
+            padding: 0 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
         }
 
-        select,
-        textarea{
-            padding:10px;
-            border:1px solid #ccc;
-            border-radius:8px;
-            width:100%;
-            max-width:500px;
+        .card {
+            background: var(--sf-card-bg);
+            padding: 24px;
+            border-radius: 8px;
+            border: 1px solid var(--sf-border);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
         }
 
-        textarea{
-            min-height:100px;
-            resize:vertical;
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--sf-text-main);
+            border-bottom: 1px solid #E5E7EB;
+            padding-bottom: 12px;
+            margin-bottom: 20px;
         }
 
-        .update-btn{
-            background:#1565c0;
-            color:white;
-            border:none;
-            padding:10px 20px;
-            border-radius:8px;
-            cursor:pointer;
-            margin-top:10px;
+        /* Grid for Record Details */
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 24px;
         }
 
-        .update-btn:hover{
-            background:#0d47a1;
+        .field {
+            display: flex;
+            flex-direction: column;
         }
 
-        .note-card{
-            background:white;
-            border-left:4px solid #1565c0;
-            padding:15px;
-            margin-top:12px;
-            border-radius:8px;
-            box-shadow:0 2px 6px rgba(0,0,0,0.08);
+        .field:not(.grid-field) {
+            margin-bottom: 20px;
         }
 
-        .note-date{
-            font-size:12px;
-            color:#666;
-            margin-bottom:8px;
+        .label {
+            font-size: 12px;
+            color: var(--sf-text-muted);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
         }
+
+        .value {
+            font-size: 15px;
+            color: var(--sf-text-main);
+            background: #F8FAFC;
+            padding: 8px 12px;
+            border-radius: 4px;
+            border: 1px solid #E5E7EB;
+            min-height: 38px; /* ensures empty values still look like boxes */
+        }
+
+        /* Long Text Values (like descriptions) */
+        .value.long-text {
+            background: #F8FAFC;
+            white-space: pre-wrap;
+            min-height: 80px;
+        }
+
+        /* Action Sections Form Elements */
+        .action-row {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .section-box {
+            margin-bottom: 24px;
+        }
+
+        .section-box:last-child {
+            margin-bottom: 0;
+        }
+
+        select, textarea {
+            padding: 10px 12px;
+            border: 1px solid var(--sf-border);
+            border-radius: 4px;
+            font-size: 14px;
+            font-family: inherit;
+            color: var(--sf-text-main);
+            transition: border-color 0.2s, box-shadow 0.2s;
+            width: 100%;
+        }
+
+        select {
+            max-width: 300px;
+            height: 40px;
+            background-color: white;
+            cursor: pointer;
+        }
+
+        textarea {
+            max-width: 100%;
+            min-height: 100px;
+            resize: vertical;
+            margin-bottom: 10px;
+        }
+
+        select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--sf-blue);
+            box-shadow: 0 0 0 3px rgba(1, 118, 211, 0.15);
+        }
+
+        .update-btn {
+            background: var(--sf-blue);
+            color: white;
+            border: none;
+            height: 40px;
+            padding: 0 16px;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .update-btn:hover {
+            background: var(--sf-blue-hover);
+        }
+
+        /* Notes Display Styling */
+        #notesContainer {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .note-card {
+            background: #F8FAFC;
+            border-left: 4px solid var(--sf-blue);
+            padding: 16px;
+            border-radius: 4px;
+            border-top: 1px solid var(--sf-border);
+            border-right: 1px solid var(--sf-border);
+            border-bottom: 1px solid var(--sf-border);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+        }
+
+        .note-date {
+            font-size: 12px;
+            color: var(--sf-text-muted);
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+        /* Footer Styling */
+.custom-footer {
+    text-align: center;
+    padding: 30px 20px;
+    margin-top: 50px;
+    background-color: var(--sf-card-bg);
+    color: var(--sf-text-muted);
+    font-size: 13px;
+    border-top: 1px solid var(--sf-border);
+    line-height: 1.8;
+}
+
+.custom-footer strong {
+    color: var(--sf-blue);
+    font-size: 15px;
+    letter-spacing: 0.3px;
+}
 
     </style>
-
 </head>
 
 <body>
 
 <div class="navbar">
-
     <h2>Case Details</h2>
-
-    <button class="btn"
-            onclick="window.location.href='history.html'">
-        Back
-    </button>
-
+    <button class="btn" onclick="window.location.href='history.html'">Back</button>
 </div>
 
 <div class="container">
 
-    <div class="field">
-        <div class="label">Case ID</div>
-        <div id="id" class="value"></div>
+    <div class="card">
+        <div class="card-title">Record Details</div>
+        <div class="details-grid">
+            <div class="field grid-field">
+                <div class="label">Case ID</div>
+                <div id="id" class="value"></div>
+            </div>
+            <div class="field grid-field">
+                <div class="label">Category</div>
+                <div id="category" class="value"></div>
+            </div>
+            <div class="field grid-field">
+                <div class="label">Priority</div>
+                <div id="priority" class="value"></div>
+            </div>
+            <div class="field grid-field">
+                <div class="label">Sentiment</div>
+                <div id="sentiment" class="value"></div>
+            </div>
+            <div class="field grid-field">
+                <div class="label">Current Status</div>
+                <div id="status" class="value"></div>
+            </div>
+            <div class="field grid-field">
+                <div class="label">Assigned To</div>
+                <div id="assignedTo" class="value"></div>
+            </div>
+            <div class="field grid-field">
+                <div class="label">Salesforce Case ID</div>
+                <div id="salesforceCaseId" class="value"></div>
+            </div>
+            <div class="field grid-field">
+                <div class="label">Salesforce Sync Status</div>
+                <div id="salesforceSyncStatus" class="value"></div>
+            </div>
+            <div class="field grid-field">
+                <div class="label">Created At</div>
+                <div id="createdAt" class="value"></div>
+            </div>
+        </div>
     </div>
 
-    <div class="field">
-        <div class="label">Category</div>
-        <div id="category" class="value"></div>
+    <div class="card">
+        <div class="card-title">Case Content & AI Insights</div>
+        
+        <div class="field">
+            <div class="label">Customer Description</div>
+            <div id="description" class="value long-text"></div>
+        </div>
+
+        <div class="field">
+            <div class="label">AI Summary</div>
+            <div id="summary" class="value long-text"></div>
+        </div>
+        
+        <div class="field">
+            <div class="label">Suggested Resolution</div>
+            <div id="suggestedResolution" class="value long-text"></div>
+        </div>
     </div>
 
-    <div class="field">
-        <div class="label">Priority</div>
-        <div id="priority" class="value"></div>
+    <div class="card">
+        <div class="card-title">Case Actions</div>
+
+        <div class="section-box">
+            <div class="label">Update Status</div>
+            <div class="action-row">
+                <select id="statusDropdown">
+                    <option value="Open">Open</option>
+                    <option value="In Progress">In Progress</option>
+                    <option value="Resolved">Resolved</option>
+                    <option value="Closed">Closed</option>
+                </select>
+                <button class="update-btn" onclick="updateStatus()">Update Status</button>
+            </div>
+        </div>
+
+        <div class="section-box">
+            <div class="label">Assign Agent</div>
+            <div class="action-row">
+                <select id="agentDropdown">
+                    <option value="Unassigned">Unassigned</option>
+                    <option value="Sathwika">Sathwika</option>
+                    <option value="Arjun">Arjun</option>
+                    <option value="Support Team">Support Team</option>
+                </select>
+                <button class="update-btn" onclick="assignAgent()">Assign Agent</button>
+            </div>
+        </div>
     </div>
 
-    <div class="field">
-        <div class="label">Sentiment</div>
-        <div id="sentiment" class="value"></div>
-    </div>
+    <div class="card">
+        <div class="card-title">Case Activity & Notes</div>
 
-    <div class="field">
-        <div class="label">Current Status</div>
-        <div id="status" class="value"></div>
-    </div>
+        <div class="section-box">
+            <div class="label">Add Note</div>
+            <textarea id="noteText" placeholder="Enter note..."></textarea>
+            <button class="update-btn" onclick="addNote()">Add Note</button>
+        </div>
 
-    <div class="field">
-        <div class="label">Assigned To</div>
-        <div id="assignedTo" class="value"></div>
-    </div>
-
-    <div class="section-box">
-
-        <div class="label">Update Status</div>
-
-        <select id="statusDropdown">
-            <option value="Open">Open</option>
-            <option value="In Progress">In Progress</option>
-            <option value="Resolved">Resolved</option>
-            <option value="Closed">Closed</option>
-        </select>
-
-        <br>
-
-        <button class="update-btn"
-                onclick="updateStatus()">
-            Update Status
-        </button>
-
-    </div>
-
-    <div class="section-box">
-
-        <div class="label">Assign Agent</div>
-
-        <select id="agentDropdown">
-            <option value="Unassigned">Unassigned</option>
-            <option value="Sathwika">Sathwika</option>
-            <option value="Arjun">Arjun</option>
-            <option value="Support Team">Support Team</option>
-        </select>
-
-        <br>
-
-        <button class="update-btn"
-                onclick="assignAgent()">
-            Assign Agent
-        </button>
-
-    </div>
-
-    <div class="section-box">
-
-        <div class="label">Add Note</div>
-
-        <textarea
-                id="noteText"
-                placeholder="Enter note..."></textarea>
-
-        <br>
-
-        <button class="update-btn"
-                onclick="addNote()">
-            Add Note
-        </button>
-
-    </div>
-
-    <div class="section-box">
-
-        <div class="label">Case Notes</div>
-
-        <div id="notesContainer"></div>
-
-    </div>
-
-    <div class="field">
-        <div class="label">Customer Description</div>
-        <div id="description" class="value"></div>
-    </div>
-
-    <div class="field">
-        <div class="label">AI Summary</div>
-        <div id="summary" class="value"></div>
-    </div>
-
-    <div class="field">
-        <div class="label">Created At</div>
-        <div id="createdAt" class="value"></div>
+        <div class="section-box" style="margin-top: 30px;">
+            <div class="label">Case Notes History</div>
+            <div id="notesContainer"></div>
+        </div>
     </div>
 
 </div>
 
 <script>
-
-const params =
-    new URLSearchParams(window.location.search);
-
-const caseId =
-    params.get("id");
+const params = new URLSearchParams(window.location.search);
+const caseId = params.get("id");
 
 async function loadCase() {
+    const response = await fetch("/cases/" + caseId);
+    const data = await response.json();
 
-    const response =
-        await fetch("/cases/" + caseId);
+    document.getElementById("id").innerText = data.id;
+    document.getElementById("category").innerText = data.category;
+    document.getElementById("priority").innerText = data.priority;
+    document.getElementById("sentiment").innerText = data.sentiment;
+    document.getElementById("status").innerText = data.status;
+    document.getElementById("assignedTo").innerText = data.assignedTo;
+    
+    document.getElementById("salesforceCaseId").innerText = data.salesforceCaseId || "Not Synced";
+    document.getElementById("salesforceSyncStatus").innerText = data.salesforceSyncStatus || "Pending";
 
-    const data =
-        await response.json();
-
-    document.getElementById("id").innerText =
-        data.id;
-
-    document.getElementById("category").innerText =
-        data.category;
-
-    document.getElementById("priority").innerText =
-        data.priority;
-
-    document.getElementById("sentiment").innerText =
-        data.sentiment;
-
-    document.getElementById("status").innerText =
-        data.status;
-
-    document.getElementById("assignedTo").innerText =
-        data.assignedTo;
-
-    document.getElementById("statusDropdown").value =
-        data.status;
-
-    document.getElementById("agentDropdown").value =
-        data.assignedTo;
-
-    document.getElementById("description").innerText =
-        data.customerDescription;
-
-    document.getElementById("summary").innerText =
-        data.summary;
-
-    document.getElementById("createdAt").innerText =
-        data.createdAt;
+    document.getElementById("statusDropdown").value = data.status;
+    document.getElementById("agentDropdown").value = data.assignedTo;
+    document.getElementById("description").innerText = data.customerDescription;
+    document.getElementById("summary").innerText = data.summary;
+    document.getElementById("suggestedResolution").innerText = data.suggestedResolution || "No recommendation available";
+    document.getElementById("createdAt").innerText = data.createdAt;
 }
 
 async function updateStatus() {
-
-    const status =
-        document.getElementById("statusDropdown").value;
-
-    await fetch(
-        "/cases/" + caseId + "/status?status=" +
-        encodeURIComponent(status),
-        {
-            method:"PUT"
-        }
-    );
-
+    const status = document.getElementById("statusDropdown").value;
+    await fetch("/cases/" + caseId + "/status?status=" + encodeURIComponent(status), {
+        method:"PUT"
+    });
     alert("Status updated successfully");
-
     loadCase();
 }
 
 async function assignAgent() {
-
-    const assignedTo =
-        document.getElementById("agentDropdown").value;
-
-    await fetch(
-        "/cases/" + caseId + "/assign?assignedTo=" +
-        encodeURIComponent(assignedTo),
-        {
-            method:"PUT"
-        }
-    );
-
+    const assignedTo = document.getElementById("agentDropdown").value;
+    await fetch("/cases/" + caseId + "/assign?assignedTo=" + encodeURIComponent(assignedTo), {
+        method:"PUT"
+    });
     alert("Agent assigned successfully");
-
     loadCase();
 }
 
 async function addNote() {
-
-    const note =
-        document.getElementById("noteText").value;
-
+    const note = document.getElementById("noteText").value;
     if(note.trim() === ""){
         alert("Enter a note");
         return;
     }
-
-    await fetch(
-        "/cases/" + caseId + "/notes",
-        {
-            method:"POST",
-            headers:{
-                "Content-Type":"application/json"
-            },
-            body:JSON.stringify({
-                note:note
-            })
-        }
-    );
-
+    await fetch("/cases/" + caseId + "/notes", {
+        method:"POST",
+        headers:{
+            "Content-Type":"application/json"
+        },
+        body:JSON.stringify({ note:note })
+    });
     document.getElementById("noteText").value = "";
-
     loadNotes();
-
     alert("Note added successfully");
 }
 
 async function loadNotes() {
-
-    const response =
-        await fetch("/cases/" + caseId + "/notes");
-
-    const notes =
-        await response.json();
-
-    const container =
-        document.getElementById("notesContainer");
-
+    const response = await fetch("/cases/" + caseId + "/notes");
+    const notes = await response.json();
+    const container = document.getElementById("notesContainer");
+    
     container.innerHTML = "";
 
     if(notes.length === 0){
-
-        container.innerHTML =
-            "<p>No notes available.</p>";
-
+        container.innerHTML = "<p style='color: #666; font-style: italic;'>No notes available.</p>";
         return;
     }
 
     notes.forEach(n => {
-
         container.innerHTML += `
             <div class="note-card">
                 <div class="note-date">
@@ -389,8 +452,11 @@ async function loadNotes() {
 
 loadCase();
 loadNotes();
-
 </script>
-
+<footer class="custom-footer">
+    <strong>AI-Powered CRM Case Management System with Salesforce Integration</strong><br>
+    Developed by Sathwika Thangallapally<br>
+    Built using Java, Spring Boot, PostgreSQL, Gemini AI, Salesforce REST API, Gmail SMTP, HTML, CSS and JavaScript
+</footer>
 </body>
 </html>

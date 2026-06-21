@@ -8,7 +8,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import com.sathwika.aicrm.service.EmailService;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -20,23 +20,29 @@ public class AnalyzeCaseController {
     private final GeminiService geminiService;
     private final CaseAnalysisRepository caseAnalysisRepository;
     private final CaseNoteRepository caseNoteRepository;
+    private final EmailService emailService;
 
     public AnalyzeCaseController(
-            GeminiService geminiService,
-            CaseAnalysisRepository caseAnalysisRepository,
-            CaseNoteRepository caseNoteRepository) {
+        GeminiService geminiService,
+        CaseAnalysisRepository caseAnalysisRepository,
+        CaseNoteRepository caseNoteRepository,
+        EmailService emailService) {
 
-        this.geminiService = geminiService;
-        this.caseAnalysisRepository = caseAnalysisRepository;
-        this.caseNoteRepository = caseNoteRepository;
-    }
+    this.geminiService = geminiService;
+    this.caseAnalysisRepository = caseAnalysisRepository;
+    this.caseNoteRepository = caseNoteRepository;
+    this.emailService = emailService;
+}
 
     @GetMapping("/analyze-case")
-    public String analyzeCase(
-            @RequestParam String description) {
+public String analyzeCase(
+        @RequestParam String description,
+        @RequestParam String customerEmail) {
 
-        return geminiService.analyzeCase(description);
-    }
+    return geminiService.analyzeCase(
+            description,
+            customerEmail);
+}
 
     @GetMapping("/cases")
     public List<CaseAnalysis> getAllCases() {
@@ -54,19 +60,34 @@ public class AnalyzeCaseController {
     }
 
     @PutMapping("/cases/{id}/status")
-    public CaseAnalysis updateStatus(
-            @PathVariable Long id,
-            @RequestParam String status) {
+public CaseAnalysis updateStatus(
+        @PathVariable Long id,
+        @RequestParam String status) {
 
-        CaseAnalysis caseAnalysis =
-                caseAnalysisRepository.findById(id)
-                        .orElseThrow(() ->
-                                new RuntimeException("Case not found"));
+    CaseAnalysis caseAnalysis =
+            caseAnalysisRepository.findById(id)
+                    .orElseThrow(() ->
+                            new RuntimeException("Case not found"));
 
-        caseAnalysis.setStatus(status);
+    caseAnalysis.setStatus(status);
 
-        return caseAnalysisRepository.save(caseAnalysis);
+    if ("Resolved".equalsIgnoreCase(status)
+            && caseAnalysis.getCustomerEmail() != null
+            && !caseAnalysis.getCustomerEmail().isBlank()
+            && !caseAnalysis.isEmailSent()) {
+
+        emailService.sendResolutionEmail(
+                caseAnalysis.getCustomerEmail(),
+                String.valueOf(caseAnalysis.getId()),
+                caseAnalysis.getCategory(),
+                caseAnalysis.getSuggestedResolution()
+        );
+
+        caseAnalysis.setEmailSent(true);
     }
+
+    return caseAnalysisRepository.save(caseAnalysis);
+}
 
     @PutMapping("/cases/{id}/assign")
     public CaseAnalysis assignCase(
@@ -192,7 +213,9 @@ public List<CaseAnalysis> searchCases(
         @RequestParam String keyword) {
 
     return caseAnalysisRepository
-            .findByCustomerDescriptionContainingIgnoreCase(keyword);
+            .findByCategoryContainingIgnoreCaseOrCustomerDescriptionContainingIgnoreCase(
+                    keyword,
+                    keyword);
 }
 
     @GetMapping("/export-csv")

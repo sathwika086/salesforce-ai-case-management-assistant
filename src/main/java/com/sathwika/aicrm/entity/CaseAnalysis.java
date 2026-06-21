@@ -21,10 +21,18 @@ public class CaseAnalysis {
 
     private String assignedTo = "Unassigned";
 
+    private String salesforceCaseId;
+
+    private String salesforceSyncStatus;
+    private String customerEmail;
+
+private boolean emailSent = false;
+
     @Column(length = 2000)
     private String summary;
+
     @Column(length = 3000)
-private String suggestedResolution;
+    private String suggestedResolution;
 
     @Column(length = 5000)
     private String customerDescription;
@@ -78,19 +86,36 @@ private String suggestedResolution;
         this.assignedTo = assignedTo;
     }
 
+    public String getSalesforceCaseId() {
+        return salesforceCaseId;
+    }
+
+    public void setSalesforceCaseId(String salesforceCaseId) {
+        this.salesforceCaseId = salesforceCaseId;
+    }
+
+    public String getSalesforceSyncStatus() {
+        return salesforceSyncStatus;
+    }
+
+    public void setSalesforceSyncStatus(String salesforceSyncStatus) {
+        this.salesforceSyncStatus = salesforceSyncStatus;
+    }
+
     public String getSummary() {
         return summary;
     }
-    public String getSuggestedResolution() {
-    return suggestedResolution;
-}
-
-public void setSuggestedResolution(String suggestedResolution) {
-    this.suggestedResolution = suggestedResolution;
-}
 
     public void setSummary(String summary) {
         this.summary = summary;
+    }
+
+    public String getSuggestedResolution() {
+        return suggestedResolution;
+    }
+
+    public void setSuggestedResolution(String suggestedResolution) {
+        this.suggestedResolution = suggestedResolution;
     }
 
     public String getCustomerDescription() {
@@ -108,4 +133,19 @@ public void setSuggestedResolution(String suggestedResolution) {
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
+    public String getCustomerEmail() {
+    return customerEmail;
+}
+
+public void setCustomerEmail(String customerEmail) {
+    this.customerEmail = customerEmail;
+}
+
+public boolean isEmailSent() {
+    return emailSent;
+}
+
+public void setEmailSent(boolean emailSent) {
+    this.emailSent = emailSent;
+}
 }
